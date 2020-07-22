@@ -1,0 +1,83 @@
+---
+title: "Week_30_Australian_Pets_GitHub"
+author: "Eric Fletcher"
+date: "7/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidytuesdayR)
+library(tidyverse)
+library(scales)
+library(janitor)
+theme_set(theme_light())
+
+animal_outcomes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-21/animal_outcomes.csv')
+
+animal_outcomes_long <- animal_outcomes %>% 
+  pivot_longer(ACT:WA, names_to = "location", values_to = "count") %>% 
+  select(year, location, animal_type, outcome, count, Total) %>%
+  clean_names()
+
+options(digits = 2)
+
+cbbPalette <- c("#052704", "#f30ae2", "#0072B2", "#f63d43")
+
+bar <- animal_outcomes_long %>% 
+  filter(!is.na(total)) %>% 
+  mutate(outcome = fct_lump(outcome, 3, w = total)) %>%
+  group_by(year, outcome) %>% 
+  summarise(total = sum(total)) %>%  
+  mutate(percent=total/sum(total)*100) %>% 
+  mutate(outcome = fct_reorder(outcome, percent, sum)) %>% 
+  ggplot(aes(year, percent)) +
+  geom_col(aes(fill = outcome)) +
+  scale_fill_manual(values=cbbPalette) +
+  scale_x_continuous(breaks = seq(1999,2018,1)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"))+
+  labs(title = "RSPCA Animal Outcomes",
+       subtitle = "Shelters, Care and Adoption Centres\n1999 - 2018",
+       y = "",
+       x = "",
+       fill = "Outcome",
+       caption = "Data: RSPCA | Visualization: Eric Fletcher")+
+  theme(plot.margin=unit(c(6,6,6,6),"cm"),
+        plot.title = element_text(
+          hjust = 0.5,
+          face = "bold",
+          size = 50, 
+          color = "#FFCD00"),
+        plot.subtitle = element_text(
+          hjust = 0.5,
+          face = "italic",
+          size = 25, 
+          color = "#00843D"),
+        plot.caption = element_text(
+          hjust = 0.5,
+          face = "italic",
+          size = 14, 
+          color = "black"),
+        panel.border = element_rect(linetype = NULL, fill = NA, color = "#FFCD00", size = 2),
+        axis.text.x = element_text(size = 20, face = "bold", color="black",
+                                   angle=90, vjust=0.5),
+        axis.text.y = element_text(size = 20, face = "bold", color="black"),
+        axis.title.x = element_text(size = 20, face = "bold", color="black"),
+        axis.title.y = element_text(size = 20, face = "bold", color="black"),
+        legend.position = "right",
+        legend.title = element_text(size = 20, face = "bold", color="#FFCD00"),
+        legend.text = element_text(size = 20, color="black"))
+
+
+ggsave(bar, 
+       units = c("in"),
+       width = 16,
+       height = 16,
+       dpi = 300, 
+       file="animal_outcomes_github2.png", 
+       type="cairo-png")
+```
+
