@@ -1,0 +1,181 @@
+---
+title: "Palmer Penguins"
+author: "Eric Fletcher"
+date: "7/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Libraries}
+library(tidytuesdayR)
+library(tidyverse)
+library(scales)
+library(showtext)
+font_add_google("Tomorrow", "Tomorrow")
+font_add_google("Poppins", "Poppins")
+showtext_auto()
+
+theme_set(theme_light(base_size = 24, base_family = "Tomorrow"))
+
+```
+```{r Data Import}
+tuesdata <- tidytuesdayR::tt_load(2020, week = 31)
+tuesdata #readme
+```
+```{r Data Adjustments}
+view(penguins)
+glimpse(penguins)
+summary(penguins)
+
+penguins$sex <- as.factor(penguins$sex) #change data type for the sex column from character to factor
+
+penguins$species <- factor(penguins$species, levels=c("Gentoo", "Chinstrap","Adelie"))
+
+```
+
+```{r EDA}
+penguins %>% 
+  count(species)
+
+penguins %>% 
+  count(island)
+
+penguins %>% 
+  count(sex)
+
+penguins %>% 
+  count(year)
+
+```
+
+```{r Viz}
+cbbPalette <- c("#27a8f7", "#88c0d0", "#B9C8D7")
+set.seed(2019)
+
+body_mass_avg <- penguins %>% 
+  summarize(body_mass_avg = mean(body_mass_g, na.rm = TRUE)) %>% 
+  pull(body_mass_avg)
+
+penguins %>% 
+  na.omit() %>% 
+  group_by(species, island, sex) %>%
+  ggplot(aes(x=reorder(species, -body_mass_g), y = body_mass_g, color = species))+
+  geom_jitter(position = position_jitter(seed = 2020, width = 0.2), alpha = 0.25, size = 2)+
+  stat_summary(fun = mean, geom = "point", size = 5, alpha = 1)+
+  geom_hline(aes(yintercept = body_mass_avg), color = "gray70", size = 0.6)+
+  geom_segment(data=. %>% 
+                   group_by(species, island) %>% 
+                   summarise(body_mass_g=mean(body_mass_g)) %>% 
+                   mutate(body_mass_avg=body_mass_avg),
+                 aes(y=body_mass_avg, yend=body_mass_g, xend=species), size=1)+
+  coord_flip() +
+  scale_color_manual(values=cbbPalette)+
+  scale_y_continuous(labels = scales::comma)+
+  labs(x = NULL, y = "Body Mass (g)")+
+  theme(legend.position = "NONE",
+        axis.title = element_text(family = "Tomorrow", size = 13),
+        axis.text.y = element_text(family = "Tomorrow", size = 15),
+        axis.text.x = element_text(family = "Tomorrow", size = 15),
+        panel.grid = element_blank())
+
+```
+```{r}
+
+body_mass_avg <- penguins %>% 
+  summarize(body_mass_avg = mean(body_mass_g, na.rm = TRUE)) %>% 
+  pull(body_mass_avg)
+
+mean_penguins <- penguins %>%
+  mutate(species    = reorder(species, -body_mass_g), 
+         grand_mean = mean(body_mass_g, na.rm = TRUE)) %>%
+  group_by(species, grand_mean) %>%
+  summarize(mean_wt = mean(body_mass_g, na.rm = TRUE))
+
+arrows <- 
+  tibble(
+    x1 = c(3.29, 2.7, 1.7, 2),
+    x2 = c(2.5, 3, 2, 1),
+    y1 = c(5200, 3900, 3900, 5200), 
+    y2 = c(grand_mean, 3720, 3720, 5100)
+  )
+
+bar <- penguins %>% 
+  na.omit() %>% 
+  group_by(species, island, sex) %>%
+  ggplot(aes(x=reorder(species, -body_mass_g), y = body_mass_g, color = species))+
+  geom_jitter(position = position_jitter(seed = 2020, width = 0.2), alpha = 0.25, size = 2)+
+  stat_summary(fun = mean, geom = "point", size = 5, alpha = 1)+
+  geom_hline(aes(yintercept = body_mass_avg), color = "gray70", size = 0.6)+
+  geom_segment(data = mean_penguins,
+               aes(x = species, xend = species, y = mean_wt, yend = grand_mean), size = 0.9) +
+  coord_flip() +
+  scale_color_manual(values=cbbPalette)+
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "The Amazing Palmer Penguins",
+       subtitle = "Body Mass by Species",
+       x = "Species", 
+       y = "Body Mass (g)",
+       caption ="Data: Gorman, Williams and Fraser, 2014 | Visualization: Eric Fletcher")+
+  theme(legend.position = "NONE",
+        plot.title = element_text(
+          family = "Tomorrow",
+          hjust = 0.5,
+          face = "bold",
+          size = 85, 
+          color = "black"),
+        plot.subtitle = element_text(
+          family = "Tomorrow",
+          hjust = 0.5,
+          face = "italic",
+          size = 35, 
+          color = "black"),
+       plot.caption = element_text(
+         family = "Tomorrow",
+          hjust = 0.5,
+          face = "bold",
+          size = 15, 
+          color = "black"),
+      axis.title = element_text(family = "Tomorrow", size = 18, color="black"),
+      axis.text.x = element_text(family = "Tomorrow", size = 18, color="black"),
+      axis.text.y = element_text(family = "Tomorrow", size = 18, color="black"),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.grid.major.y = element_blank())+
+  annotate(
+    "text", x = 3.45, y = 5200, family = "Poppins", size = 4, color = "gray20", lineheight = .9,
+    label = glue::glue("Palmer Penguins Grand Mean:\n4,202 grams")
+  ) +
+  annotate(
+    "text", x = 2.56, y = 3700, family = "Poppins", size = 4, color = "gray20", lineheight = .8,
+    label = glue::glue("Adelie Mean:\n 3,701 grams")
+  ) +
+  annotate(
+    "text", x = 1.56, y = 3700, family = "Poppins", size = 4, color = "gray20", lineheight = .8,
+    label = glue::glue("Chinstrap Mean:\n 3,733 grams")
+  ) +
+    annotate(
+    "text", x = 2.18, y = 5200, family = "Poppins", size = 4, color = "gray20", lineheight = .8,
+    label = glue::glue("Gentoo Mean:\n 5,076 grams")
+  ) +
+  geom_curve(
+    data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
+    arrow = arrow(length = unit(0.07, "inch")), size = 0.4,
+    color = "gray20", curvature = -0.3
+  ) 
+ggsave(bar, 
+       units = c("in"),
+       width = 10,
+       height = 5.5,
+       dpi = 300, 
+       file="palmer_penguins.png", 
+       type="cairo-png")
+
+
+
+
+```
+
+
