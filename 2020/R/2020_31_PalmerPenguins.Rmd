@@ -29,13 +29,20 @@ theme_set(theme_light(base_size = 24, base_family = "Tomorrow"))
 cbbPalette <- c("#8fbcbb", "#88c0d0", "#81a1c1") #set color palette to be used in plotting. Palette colors: https://github.com/arcticicestudio/nord
 
 #summary statistics used in plotting below
-grand_mean <- penguins.csv %>% 
-  summarise(grand_mean = mean(body_mass_g, na.rm=TRUE)) %>% 
-  pull(grand_mean)
+mean_penguins <- penguins.csv %>%
+  mutate(species    = reorder(species, -body_mass_g), 
+         grand_mean = mean(body_mass_g, na.rm = TRUE)) %>%
+  group_by(species, grand_mean) %>%
+  summarize(mean_wt = mean(body_mass_g, na.rm = TRUE))
 
-body_mass_avg <- penguins.csv %>% 
-  summarise(body_mass_avg = mean(body_mass_g, na.rm = TRUE)) %>% 
-  pull(body_mass_avg)
+#coordinates used in arrow placement
+arrows <- 
+  tibble(
+    x1 = c(3.29, 2.7, 1.7, 2, 0.9),
+    x2 = c(2.5, 3, 2, 1, 1),
+    y1 = c(5200, 3900, 3900, 5200, 3400), 
+    y2 = c(grand_mean, 3720, 3740, 5100, 3930)
+  )
 
 #plot
 bar <- penguins.csv %>% 
@@ -46,7 +53,7 @@ bar <- penguins.csv %>%
   stat_summary(fun = mean, geom = "point", size = 5, alpha = 1)+
   geom_hline(aes(yintercept = body_mass_avg), color = "gray70", size = 0.6)+
   geom_segment(data = mean_penguins,
-               aes(x = species, xend = species, y = mean_wt, yend = grand_mean), size = 0.9) +
+                    aes(x = species, xend = species, y = mean_wt, yend = grand_mean), size = 0.9)+
   coord_flip() +
   scale_color_manual(values=cbbPalette)+
   scale_y_continuous(labels = scales::comma)+
@@ -81,7 +88,12 @@ bar <- penguins.csv %>%
       panel.grid.major.x = element_blank(),
       panel.grid.minor = element_blank(),
       panel.grid.major.y = element_blank())+
-  
+#adding curve, see arrow coordinates above for data
+  geom_curve(
+    data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
+    arrow = arrow(length = unit(0.07, "inch")), size = 0.4,
+    color = "gray20", curvature = -0.3
+  ) +
 ##ARROOW PLACEMENT
 #add text
       annotate(
@@ -98,25 +110,8 @@ bar <- penguins.csv %>%
         label = glue::glue("Gentoo Mean:\n 5,076 grams")) +
       annotate(
         "text", x = 0.83, y = 3350, family = "Poppins", size = 10, color = "gray20", lineheight = .3,
-        label = glue::glue("Individual Penguin")) +
-  
-#adding curve, see arrow coordinates above for data
-  geom_curve(
-    data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
-    arrow = arrow(length = unit(0.07, "inch")), size = 0.4,
-    color = "gray20", curvature = -0.3
-  )
-
-#coordinates used in arrow placement
-arrows <- 
-  tibble(
-    x1 = c(3.29, 2.7, 1.7, 2, 0.9),
-    x2 = c(2.5, 3, 2, 1, 1),
-    y1 = c(5200, 3900, 3900, 5200, 3400), 
-    y2 = c(grand_mean, 3720, 3740, 5100, 3930)
-  )
-bar
-
+        label = glue::glue("Individual Penguin"))
+#save plot
 ggsave(bar, 
        units = c("in"),
        width = 10,
