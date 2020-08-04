@@ -72,7 +72,7 @@ bar <- energy_types_clean %>%
     axis.text.x = element_text(color = "white", size = 14),
     axis.text.y = element_text(color = "white", size = 14),
     plot.margin = unit(c(2, 2, 2, 2), "cm"),
-    legend.position = c(0.79, .055),
+    legend.position = c(0.84, .055),
     legend.title = element_text(size = 27),
     legend.text = element_text(size = 20),
     plot.title = element_text(size = 50, face = "bold", hjust = 0.5),
