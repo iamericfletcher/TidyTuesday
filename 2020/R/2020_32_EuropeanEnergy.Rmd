@@ -1,0 +1,85 @@
+---
+title: "European Energy"
+author: "Eric Fletcher"
+date: "8/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidytuesdayR)
+library(tidyverse)
+library(skimr)
+library(scales)
+library(hrbrthemes)
+library(grid)
+library(geofacet)
+hrbrthemes::import_roboto_condensed()
+#theme_set(theme_light())
+```
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2020, week = 32)
+tuesdata$energy_types
+```
+```{r}
+energy_types <- tuesdata$energy_types
+country_totals <- tuesdata$country_totals
+```
+```{r}
+skim(energy_types)
+NA2 <- energy_types_na_update %>%
+  filter(is.na(country_name)) %>% 
+  pivot_longer(cols = 5:7, names_to = "year", values_to = "total_production") 
+NA2
+
+
+```
+```{r}
+options(scipen = 999)
+
+country_map <- tibble(country = c("EL", "UK"),
+                      country_name_na_replace = c("Greece", "UK"))
+
+
+energy_types_clean <- energy_types %>% 
+  left_join(country_map, by = "country") %>% 
+  mutate(country_name = coalesce(country_name, country_name_na_replace)) %>% 
+  select(-country_name_na_replace) %>% 
+  #pivot_longer(cols = 5:7, names_to = "year", values_to = "total_production") %>%
+  mutate(country_name = case_when(country_name == "North Macedonia" ~ "N. Macedonia",
+                                  country_name == "Bosnia & Herzegovina" ~ "Bosnia & H.",
+                                  country == "UK" ~ "UK",
+                                  country == "EL" ~ "Greece",
+                                  TRUE ~ country_name)) %>% 
+  #group_by(year) %>% 
+  #mutate(grand_total = sum(total_production),
+         #country_name = str_trunc(country_name, 11)) #%>% 
+  #arrange(year, desc(total_production))
+
+
+bar <- energy_types_clean %>%
+  ggplot(aes(x=year, y=total_production, fill = type)) +
+  geom_bar(stat = "identity", position = "stack", width = 0.5)+
+  scale_fill_ft()+
+  facet_geo(~country_name, grid = "europe_countries_grid2", scales = "free")+
+  #facet_wrap(~country_name, scales = "free") +
+  coord_flip()+
+  scale_y_continuous(labels = scales::comma) +
+  theme(legend.position = "bottom")
+
+
+  
+ggsave(bar, 
+       units = c("in"),
+       width = 24,
+       height = 19,
+       dpi = 300, 
+       file="2020_32_EuropeanEnergy.png", 
+       type="cairo-png")
+
+```
+
+
+
