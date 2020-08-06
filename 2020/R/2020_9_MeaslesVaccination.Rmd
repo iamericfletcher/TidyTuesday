@@ -12,8 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(scales)
 library(skimr)
-library(showtext) #did not use
-font_add_google("", "")
+#library(showtext) #did not use
+#font_add_google("", "")
 theme_set(theme_light())
 ```
 ```{r}
