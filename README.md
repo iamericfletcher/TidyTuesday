@@ -3,7 +3,7 @@
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming. 
 
 ### [Week 2020/34](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-18/readme.md) Plants in Danger | Data: [IUCN Red List](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-18/readme.md) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_34_PlantsinDanger.Rmd)
-![2020_34_PlantsinDanger](https://user-images.githubusercontent.com/64165327/90455880-39bba780-e0c5-11ea-9c5a-d9f09cc9972f.png)
+![2020_34_PlantsinDanger_Custom](https://user-images.githubusercontent.com/64165327/90458481-88207480-e0cc-11ea-86af-9345ba309003.png)
 
 ### [Week 2020/32](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-04/readme.md) European Energy | Data: [Eurostat](https://ec.europa.eu/eurostat/statistics-explained/index.php/Electricity_generation_statistics_%E2%80%93_first_results) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_32_EuropeanEnergy.Rmd)
 ![2020_32_EuropeanEnergy](https://user-images.githubusercontent.com/64165327/89354647-63b5a880-d687-11ea-89b0-671e4cc37a96.png)
