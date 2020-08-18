@@ -48,6 +48,10 @@ levels(plants$year_last_seen)
 plants$year_last_seen <- factor(plants$year_last_seen, levels = c("Before 1900", "1900-1919",   "1920-1939", "1940-1959", "1960-1979", "1980-1999", "2000-2020"))
 
 #adding color to caption
+```
+
+
+```{r EDA}
 mycaption <- 'Data: IUCN Red List | Visualization: Eric Fletcher | <span style="color:red;">**#SavethePlants**</span>'
 
 #plot red_list_category totals for each year
@@ -57,7 +61,7 @@ bar <- plants %>%
   summarise(total = n()) %>% 
   ggplot(aes(x = year_last_seen, y = total, fill = red_list_category))+
   geom_col(position = "dodge") +
-  geom_text(aes(label = total), position = position_dodge(width = 1), vjust = -0.2, size = 3)+
+  geom_text(aes(label = total), position = position_dodge(width = 1), vjust = -0.2, size = 7)+
   scale_fill_manual(values = c("#ff0000", "#cccc00"))+
   expand_limits(y = seq(0, 125, 25))+
   labs(title ="Plants in <strong><span style='color:#ff0000'>**Danger**</span></strong></b>",
@@ -70,24 +74,28 @@ bar <- plants %>%
         legend.position = "bottom",        
         plot.title = element_markdown(
           family = "Noto Serif TC",
-          hjust = 0.5
+          hjust = 0.5,
+          size = 30
         ),
         plot.subtitle = element_text(
           family = "Noto Serif TC",
           hjust = 0.5,
-          size = 7
+          size = 12
         ),
         plot.caption = element_markdown(
           family = "Noto Serif TC",
           hjust = 0.5,
-          size = 7
+          size = 12
         ),
         axis.text.y = element_blank(),
+        axis.text.x = element_text(family = "Noto Serif TC",
+                                   size = 16),
         legend.text = element_text(family = "Noto Serif TC",
-                                   size = 7),
+                                   size = 14),
         panel.grid.major.x = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.grid.major.y = element_blank())
+        panel.grid.major.y = element_blank(),
+        legend.key.size = unit(.7,"line"))
 bar
 
 ggsave(bar, 
@@ -95,7 +103,7 @@ ggsave(bar,
        width = 4,
        height = 3,
        dpi = 300, 
-       file="2020_34_PlantsinDanger.png", 
+       file="2020_34_PlantsinDanger_Custom.png", 
        type="cairo-png")
 ```
 
