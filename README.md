@@ -2,8 +2,8 @@
 
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming. 
 
-### [Week 2020/35](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-25/readme.md) Chopped | Data: [Kaggle](https://www.kaggle.com/jeffreybraun/chopped-10-years-of-episode-data) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_35_Chopped.Rmd)
-![2020_35_Chopped](https://user-images.githubusercontent.com/64165327/91164894-d241c100-e69d-11ea-88a3-b504aa6a3670.png)
+### [Week 2020/35](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-25/readme.md) Chopped - Most Common Main Ingredient by Course | Data: [Kaggle](https://www.kaggle.com/jeffreybraun/chopped-10-years-of-episode-data) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_35_Chopped.Rmd)
+![2020_35_Chopped](https://user-images.githubusercontent.com/64165327/91168544-d07afc00-e6a3-11ea-9198-a95f592239b0.png)
 
 ### [Week 2020/34](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-18/readme.md) Plants in Danger | Data: [IUCN Red List](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-08-18/readme.md) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_34_PlantsinDanger.Rmd)
 ![2020_34_PlantsinDanger_Custom](https://user-images.githubusercontent.com/64165327/90458481-88207480-e0cc-11ea-86af-9345ba309003.png)
