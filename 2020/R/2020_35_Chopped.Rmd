@@ -51,7 +51,7 @@ bar <- tidy_chopped %>%
   facet_wrap(~meal) +
   theme_minimal() +
   labs(title ="Chopped",
-       subtitle = "Most Common Ingredients Across 45 Seasons by Course",
+       subtitle = "Most Common Main Ingredient Across 45 Seasons by Course",
        caption = "Data: Kaggle | Visualization: Eric Fletcher")+
   theme(plot.margin = unit(c(1,1,1,1), "cm"),
         #strip.text.x = element_text(color = )
