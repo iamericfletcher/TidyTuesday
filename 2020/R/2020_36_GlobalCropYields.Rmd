@@ -1,0 +1,104 @@
+---
+title: "Untitled"
+author: "Eric Fletcher"
+date: "8/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidytuesdayR)
+library(tidyverse)
+library(scales)
+library(janitor)
+library(lubridate)
+
+```
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2020-09-01')
+
+tuesdata
+
+crop_yields <- tuesdata$key_crop_yields %>% 
+  clean_names()
+```
+
+```{r}
+view(crop_yields)
+
+#249 entities
+crop_yields %>% 
+  distinct(entity)
+
+#1969 - 2018
+crop_yields %>% 
+  count(year)
+
+crop_yields %>% 
+  summarise(across(everything(), ~mean(!is.na(.))))
+```
+```{r}
+crop_yields_tidy <- crop_yields %>%
+  pivot_longer(cols = ends_with("hectare"), names_to = "crop", values_to = "yield") %>% 
+  mutate(crop = str_remove(crop, '_.*$')) %>% 
+  filter(!is.na(yield),
+         crop != "beans")
+crop_yields_tidy
+
+#capitalize the first letter for each value in the crop column
+str_sub(crop_yields_tidy$crop, 1, 1) <- str_sub(crop_yields_tidy$crop, 1, 1) %>% str_to_upper()
+
+theme_set(theme_minimal())
+bar <- crop_yields_tidy %>% 
+  mutate(decade = 10 * floor((year) / 10)) %>% 
+  group_by(decade, crop) %>%
+  summarise(mean_yield = mean(yield)) %>% 
+  mutate(crop = fct_reorder(crop, -mean_yield)) %>% 
+  arrange(decade, desc(mean_yield)) %>% 
+  ggplot(aes(decade, mean_yield, color = crop))+
+  geom_line()+
+  geom_point()+
+  facet_wrap(~crop, scales = "free_y", nrow = 2) +
+  labs(title ="Global Crop Yields",
+       subtitle ="Average Tonnes per Hectare",
+       x ="",
+       y ="",
+       caption ="Data: Our World in Data | Visualization: Eric Fletcher")+
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
+        plot.background = element_rect(fill = "#30332E"),
+        plot.title = element_text(size = "20", face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = "10", face = "bold", hjust = 0.5),
+        plot.caption = element_text(size = "7", face = "bold", hjust = 0.5),
+        legend.position = "none",
+        text = element_text(color = "white"),
+        strip.text = element_text(color = "white"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5,
+                                   color = "white"),
+        axis.text.y = element_text(color = "white"),
+        panel.grid = element_blank())
+bar
+
+ggsave(bar, 
+       units = c("in"),
+       width = 6.2,
+       height = 3.8,
+       dpi = 300, 
+       file="2020_36_GlobalCropYields.png", 
+       type="cairo-png") 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
