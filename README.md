@@ -2,6 +2,9 @@
 
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming. 
 
+### [Week 2020/38](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-15/readme.md) Public Spending on Elementary and Secondary Education | Data: [Urban Institute](https://datacatalog.urban.org/dataset/state-state-spending-kids-dataset) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_36_GlobalCropYields.Rmd)
+![education_spending](https://user-images.githubusercontent.com/64165327/93117247-8bd3f680-f68c-11ea-9238-492f40f91962.png)
+
 ### [Week 2020/36](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-01/readme.md) Global Crop Yields | Data: [Our World in Data](https://ourworldindata.org/crop-yields) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_36_GlobalCropYields.Rmd)
 ![2020_36_GlobalCropYields](https://user-images.githubusercontent.com/64165327/92004845-ba5ae480-ed10-11ea-99ee-5c9974eff7d5.png)
 
