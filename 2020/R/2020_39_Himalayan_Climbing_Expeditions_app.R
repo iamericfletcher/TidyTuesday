@@ -36,8 +36,14 @@ country_names <- sort(
 
 #Shiny
 ui <- fluidPage(
+    tags$a(
+        href="https://iamericfletcher.shinyapps.io/Himalayan_Peaks_Shiny/", 
+        tags$img(src="mountains.png", 
+                 title="Example Image Link", 
+                 width="625",
+                 height="250")
+    ),
     titlePanel(HTML(paste("Himalayan Climbing Expeditions: 1909 - 2019", "Which Country Was the First to the Summit?", sep = "<br/>"))),
-    
     fluidPage(
         fluidRow(
             column(4,
