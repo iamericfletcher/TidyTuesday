@@ -2,7 +2,7 @@
 
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming.
 
-### [Week 2020/39](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-15/readme.md) Himalayan Climbing Expeditions: 1909 - 2019 [Shiny Interactive DataTable] | Data: [the Himalayan Database](https://www.himalayandatabase.com/) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_39_Himalayan_Climbing_Expeditions_app.R)
+### [Week 2020/39](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-22/readme.md) Himalayan Climbing Expeditions: 1909 - 2019 [Shiny Interactive DataTable] | Data: [the Himalayan Database](https://www.himalayandatabase.com/) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_39_Himalayan_Climbing_Expeditions_app.R)
 ![GIF](https://user-images.githubusercontent.com/64165327/95458196-d79e5680-093f-11eb-80ae-5a5fb3bdbab0.gif)
 
 ### [Week 2020/38](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-15/readme.md) Public Spending on Elementary and Secondary Education | Data: [Urban Institute](https://datacatalog.urban.org/dataset/state-state-spending-kids-dataset) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_36_GlobalCropYields.Rmd)
