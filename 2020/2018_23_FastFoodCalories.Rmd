@@ -1,0 +1,98 @@
+---
+title: "Fast Food"
+author: "Eric Fletcher"
+date: "7/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+library(plotly)
+library(Cairo)
+library(scales)
+library(rayshader)
+library(extrafont)
+library(scales)
+library(RColorBrewer)
+library(ggrepel)
+library(ggthemes)
+```
+
+
+```{r}
+fast_food_raw <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
+```
+
+```{r}
+cbbPalette <- c("#f30ae2", "#052704", "#00ff00", "#f63d43", "#00f9ff", "#0072B2", "#854442", "#C0C0C0")
+
+bar <- fast_food_raw %>% 
+  arrange(item, sat_fat, cholesterol) %>% 
+  group_by(restaurant) %>% 
+  select(restaurant, item, sat_fat, cholesterol, calories) %>%
+  ggplot(aes(sat_fat, cholesterol)) +
+  geom_point(aes(color = restaurant, size = calories), alpha = 0.9) +
+  scale_size(range = c(0.1, 10))+
+  geom_label_repel(aes(label = ifelse(cholesterol>280 | sat_fat>35, paste(item), "")), 
+                  face = "bold",
+                  color = "black",
+                  alpha = 0.6,
+                  size = 5,
+                  box.padding = unit(1.5, "lines"),
+                  label.size = 0,
+                  seed = 1)+
+    labs(title = "FAST FOOD",
+       subtitle = "The Most Unhealthy Items\n2018",
+       y = "Cholesterol (grams)",
+       x = "Saturated Fat (grams)",
+       color = "Restaurant",
+       size = "Calories",
+       caption = "Data: fastfoodnutrition.com | Visualization: @ImmediateFishing8")+
+  theme_minimal()+
+  scale_color_manual(values=cbbPalette)+
+  guides(colour = guide_legend(override.aes = list(size=10)))+
+  theme(plot.margin=unit(c(6,6,6,6),"cm"),
+        plot.title = element_text(
+          hjust = 0.5,
+          face = "bold",
+          size = 85, 
+          color = "#FFC72C"),
+        plot.subtitle = element_text(
+          hjust = 0.5,
+          face = "italic",
+          size = 28, 
+          color = "#FFC72C"),
+        plot.caption = element_text(
+          hjust = 0.5,
+          face = "italic",
+          size = 14, 
+          color = "#052704"),
+        panel.border = element_rect(linetype = "dashed", fill = NA, size = 2),
+        panel.background = element_rect(fill = "#FFC72C",
+                                        colour = "#FFC72C",
+                                        size = 0.5, 
+                                        linetype = "solid"),
+        axis.text.x = element_text(size = 20, face = "bold", color="#702082"),
+        axis.text.y = element_text(size = 20, face = "bold", color="#702082"),
+        axis.title.x = element_text(size = 20, face = "bold", color="#702082"),
+        axis.title.y = element_text(size = 20, face = "bold", color="#702082"),
+        legend.position = "right",
+        legend.title = element_text(size = 20, face = "bold", color="#702082"),
+        legend.text = element_text(size = 20, color="#702082"))
+```
+
+```{r}
+ggsave(bar, 
+       units = c("in"),
+       width = 16,
+       height = 16,
+       dpi = 300, 
+       file="fast_food_reddit.png", 
+       type="cairo-png")
+```
+

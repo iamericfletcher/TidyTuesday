@@ -1,0 +1,125 @@
+---
+title: "Palmer Penguins"
+author: "Eric Fletcher"
+date: "7/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidytuesdayR) #optional depending on how you are reading in the data from TidyTuesday GitHub.
+#Import data
+penguins.csv <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv')
+
+
+library(tidyverse)
+library(scales)
+library(showtext)
+font_add_google("Tomorrow", "Tomorrow")
+font_add_google("Poppins", "Poppins")
+font_add_google("Trochut", "Trochut")
+showtext_auto()
+
+theme_set(theme_light(base_size = 24, base_family = "Tomorrow"))
+
+cbbPalette <- c("#8fbcbb", "#88c0d0", "#81a1c1") #set color palette to be used in plotting. Palette colors: https://github.com/arcticicestudio/nord
+
+#summary statistics used in plotting below
+mean_penguins <- penguins.csv %>%
+  mutate(species    = reorder(species, -body_mass_g), 
+         grand_mean = mean(body_mass_g, na.rm = TRUE)) %>%
+  group_by(species, grand_mean) %>%
+  summarize(mean_wt = mean(body_mass_g, na.rm = TRUE))
+
+#coordinates used in arrow placement
+arrows <- 
+  tibble(
+    x1 = c(3.29, 2.7, 1.7, 2, 0.9),
+    x2 = c(2.5, 3, 2, 1, 1),
+    y1 = c(5200, 3900, 3900, 5200, 3400), 
+    y2 = c(grand_mean, 3720, 3740, 5100, 3930)
+  )
+
+#plot
+bar <- penguins.csv %>% 
+  na.omit() %>% 
+  group_by(species, island, sex) %>%
+  ggplot(aes(x=reorder(species, -body_mass_g), y = body_mass_g, color = species))+
+  geom_jitter(position = position_jitter(seed = 2020, width = 0.2), alpha = 0.4, size = 2)+
+  stat_summary(fun = mean, geom = "point", size = 5, alpha = 1)+
+  geom_hline(aes(yintercept = body_mass_avg), color = "gray70", size = 0.6)+
+  geom_segment(data = mean_penguins,
+                    aes(x = species, xend = species, y = mean_wt, yend = grand_mean), size = 0.9)+
+  coord_flip() +
+  scale_color_manual(values=cbbPalette)+
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "The Amazing Palmer Penguins",
+       subtitle = "Body Mass by Species: 2007-2009",
+       x = "", 
+       y = "Body Mass (g)",
+       caption ="Data: Gorman, Williams and Fraser, 2014 | Visualization: Eric Fletcher")+
+  theme(legend.position = "NONE",
+        plot.title = element_text(
+          family = "Trochut",
+          hjust = 0.5,
+          face = "bold",
+          size = 69, 
+          color = "black"),
+        plot.subtitle = element_text(
+          family = "Trochut",
+          hjust = 0.5,
+          face = "bold",
+          size = 48, 
+          color = "black"),
+       plot.caption = element_text(
+         family = "Tomorrow",
+          hjust = 0.5,
+          face = "bold",
+          size = 17, 
+          color = "black"),
+      axis.title = element_text(family = "Tomorrow", size = 30, color="black"),
+      axis.text.x = element_text(family = "Tomorrow", size = 30, color="black"),
+      axis.text.y = element_text(family = "Tomorrow", size = 30, color="black"),
+      panel.border = element_rect(linetype = "solid", color = "#27a8f7", size = 1),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.grid.major.y = element_blank())+
+#adding curve, see arrow coordinates above for data
+  geom_curve(
+    data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
+    arrow = arrow(length = unit(0.07, "inch")), size = 0.4,
+    color = "gray20", curvature = -0.3
+  ) +
+##ARROOW PLACEMENT
+#add text
+      annotate(
+        "text", x = 3.45, y = 5200, family = "Poppins", size = 10, color = "red", lineheight = .3,
+        label = glue::glue("Palmer Penguins Grand Mean:\n 4,202 grams")) +
+      annotate(
+        "text", x = 2.56, y = 3730, family = "Poppins", size = 10, color = "gray20", lineheight = .3,
+        label = glue::glue("Adelie Mean:\n 3,701 grams")) +
+      annotate(
+        "text", x = 1.56, y = 3750, family = "Poppins", size = 10, color = "gray20", lineheight = .3,
+        label = glue::glue("Chinstrap Mean:\n 3,733 grams")) +
+      annotate(
+        "text", x = 2.15, y = 5200, family = "Poppins", size = 10, color = "gray20", lineheight = .3,
+        label = glue::glue("Gentoo Mean:\n 5,076 grams")) +
+      annotate(
+        "text", x = 0.83, y = 3350, family = "Poppins", size = 10, color = "gray20", lineheight = .3,
+        label = glue::glue("Individual Penguin"))
+#save plot
+ggsave(bar, 
+       units = c("in"),
+       width = 10,
+       height = 5.5,
+       dpi = 300, 
+       file="2020_31_PalmerPenguins_blog.png", 
+       type="cairo-png")
+
+```
+
+

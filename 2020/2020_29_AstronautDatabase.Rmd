@@ -1,0 +1,123 @@
+---
+title: "Week 29: Astronaut Database"
+author: "Eric Fletcher"
+date: "7/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Import the data from TidyTuesday Git
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+
+astronauts #View readme
+```
+
+```{r}
+#Question: What is each country's top astronaut by total time spent in space in weeks? 
+#Each country's top astronaut is used to show the diversity in nationalities.
+library(tidyverse)
+library(tidytuesdayR)
+library(plotly)
+library(Cairo)
+library(scales)
+library(rayshader)
+library(extrafont)
+library(scales)
+library(RColorBrewer)
+```
+
+```{r}
+#Look at the data
+glimpse(astronauts)
+levels(astronauts$nationality)
+
+```
+
+```{r}
+#Data cleaning
+astronauts$nationality <- as.factor(astronauts$nationality)
+astronauts$nationality <- factor(astronauts$nationality, levels=c("U.S.S.R/Russia", "U.S.", "France", "Germany", "Japan", "Italy", "Canada", "Netherland", "Belgium", "U.K."), labels=c("U.S.S.R/Russia", "U.S.", "France", "Germany", "Japan", "Italy", "Canada", "Netherland", "Belgium", "U.K"))
+astronauts$name <- sub("(\\w+),\\s(\\w+)","\\2 \\1", astronauts$name)
+astronauts$name <- gsub("De Frank Winne", "Frank De Winne", astronauts$name)
+astronauts$name <- gsub("Peggy Whitson A.", "Peggy Whitson", astronauts$name)
+astronauts$name <- gsub("Timothy Peake Nigel", "Timothy Peake", astronauts$name)
+```
+
+```{r}
+loadfonts()
+```
+
+```{r}
+options(digits = 2)
+
+bar <- astronauts %>% 
+  mutate(total_weeks_in_space = total_hrs_sum / 168) %>% 
+  arrange(nationality, desc(total_weeks_in_space)) %>%
+  group_by(nationality) %>%
+  slice(1) %>% 
+  select(name, nationality, total_weeks_in_space) %>%  
+  arrange(desc(total_weeks_in_space)) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(name, total_weeks_in_space), total_weeks_in_space, fill = nationality))+
+  geom_col(width = 0.5)+
+  coord_flip()+
+  scale_y_continuous(label = comma, breaks = seq(0,120,20))+
+  expand_limits(y = 0)+
+  labs(title = "SPACE TIME",
+       subtitle = "Each Country's Leading Astronaut by Weeks in Space\n 1961-2019",
+       caption = "Data: Mariya Stavnqichuk and Tatsuya Corlett | Visualization: @Kodak_Landscape",
+       color = "",
+       y = "",
+       x= "",
+       fill = "")+
+  theme_minimal()+
+  scale_fill_brewer(palette="Set3")+
+  theme(plot.margin=unit(c(6,6,6,6),"cm"),
+    plot.background = element_rect(fill = '#030a16'),
+    plot.title = element_text(
+      hjust = 0.5,
+      face = "bold",
+      size = 85, 
+      color = "#ffffff"),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      face = "italic",
+      size = 18, 
+      color = "#ffffff"),
+    plot.caption = element_text(
+      hjust = 0.5,
+      face = "italic",
+      size = 12, 
+      color = "#ffffff"),
+    axis.text.x = element_text(size = 14, color="white"),
+    axis.text.y = element_text(size = 17, color="white"),
+    panel.grid.major.x = element_line(linetype = "dotted" , colour="white", size = .08),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linetype = "dotted" , colour="white", size = .08),
+    legend.position = "right",
+    legend.title = element_text(size = 16, color="#ffffff"),
+    legend.text = element_text(size = 15, color="#ffffff"),
+    legend.key.height = unit(1.8, "line"))
+bar
+
+
+
+```
+
+
+```{r}
+#Save output
+ggsave(bar, 
+       units = c("in"),
+       width = 12,
+       height = 16,
+       dpi = 300, 
+       file="astronaut_top_weeks_col.png", 
+       type="cairo-png")
+```
+
+

@@ -1,0 +1,88 @@
+---
+title: "2020_39_HimalayanClimbers"
+author: "Eric Fletcher"
+date: "10/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+```{r}
+library(tidyverse)
+library(scales)
+library(tidytuesdayR)
+library(gt)
+```
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2020, week = 39)
+
+peaks <- tuesdata$peaks
+members <- tuesdata$members
+expeditions <- tuesdata$expeditions
+
+view(peaks)
+view(members)
+view(expeditions)
+```
+```{r}
+# peaks
+
+peaks <- as.tibble(peaks)
+
+peaks <- peaks %>% 
+  filter(!is.na(first_ascent_country),
+         climbing_status != "Unclimbed") %>% 
+         #first_ascent_year == 201) %>% 
+  mutate(first_ascent_year = case_when(
+    first_ascent_year == 201 ~ 2018,
+    TRUE ~ as.numeric(.$first_ascent_year)
+  ))
+  
+?case_when
+peaks_shiny <- peaks %>%
+  gt() %>% 
+  tab_header(
+    title = "Himalayan Climbing Expeditions - Peaks"
+  ) %>% 
+  fmt_number(
+    columns = vars(height_metres),
+    sep_mark = ",",
+    drop_trailing_zeros = TRUE,
+    suffixing = TRUE
+  )
+
+peaks %>% 
+  write_csv("2020_39_HimalayanClimbers_Shiny/peaks.csv")
+
+peaks_country <- peaks %>% 
+  separate(col = first_ascent_country, into = c("country_1", "country_2", "country_3", "country_4", "country_5"), sep
+           = ",")
+
+country_names <- peaks_country %>% 
+  filter(climbing_status == "Unclimbed") %>% 
+  select(country_1:country_5) %>% 
+  t %>% c %>% unique() 
+
+gsub( " ", "", country_names)
+
+country_names <- trimws(country_names)
+
+country_names <- unique(unlist(strsplit(country_names)
+
+
+view(country_names)
+
+colMeans(is.na(peaks_country))
+
+
+peaks_stackoverflow <- head(peaks)
+
+dput(country_names)
+```
+```{r}
+
+
+
+
+```

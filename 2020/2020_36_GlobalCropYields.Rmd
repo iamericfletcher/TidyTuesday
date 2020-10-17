@@ -1,0 +1,162 @@
+---
+title: "Untitled"
+author: "Eric Fletcher"
+date: "8/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidytuesdayR)
+library(tidyverse)
+library(scales)
+library(janitor)
+library(lubridate)
+
+```
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2020-09-01')
+
+tuesdata
+
+crop_yields <- tuesdata$key_crop_yields %>% 
+  clean_names()
+```
+
+```{r}
+view(crop_yields)
+
+#249 entities
+crop_yields %>% 
+  distinct(entity)
+
+#1969 - 2018
+crop_yields %>% 
+  count(year)
+
+crop_yields %>% 
+  summarise(across(everything(), ~mean(!is.na(.))))
+```
+```{r}
+crop_yields_tidy <- crop_yields %>%
+  pivot_longer(cols = ends_with("hectare"), names_to = "crop", values_to = "yield") %>% 
+  mutate(crop = str_remove(crop, '_.*$')) %>% 
+  filter(!is.na(yield),
+         crop != "beans")
+crop_yields_tidy
+
+#capitalize the first letter for each value in the crop column
+str_sub(crop_yields_tidy$crop, 1, 1) <- str_sub(crop_yields_tidy$crop, 1, 1) %>% str_to_upper()
+
+<<<<<<< HEAD
+
+=======
+>>>>>>> 4daa56a7156094af81f1c9f83e1b9b76b3f1022c
+theme_set(theme_minimal())
+bar <- crop_yields_tidy %>% 
+  mutate(decade = 10 * floor((year) / 10)) %>% 
+  group_by(decade, crop) %>%
+  summarise(mean_yield = mean(yield)) %>% 
+  mutate(crop = fct_reorder(crop, -mean_yield)) %>% 
+  arrange(decade, desc(mean_yield)) %>% 
+  ggplot(aes(decade, mean_yield, color = crop))+
+  geom_line()+
+  geom_point()+
+<<<<<<< HEAD
+  facet_wrap(~crop, nrow = 2) +
+=======
+  facet_wrap(~crop, scales = "free_y", nrow = 2) +
+>>>>>>> 4daa56a7156094af81f1c9f83e1b9b76b3f1022c
+  labs(title ="Global Crop Yields",
+       subtitle ="Average Tonnes per Hectare",
+       x ="",
+       y ="",
+       caption ="Data: Our World in Data | Visualization: Eric Fletcher")+
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
+        plot.background = element_rect(fill = "#30332E"),
+        plot.title = element_text(size = "20", face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = "10", face = "bold", hjust = 0.5),
+        plot.caption = element_text(size = "7", face = "bold", hjust = 0.5),
+        legend.position = "none",
+        text = element_text(color = "white"),
+        strip.text = element_text(color = "white"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5,
+                                   color = "white"),
+        axis.text.y = element_text(color = "white"),
+        panel.grid = element_blank())
+bar
+
+ggsave(bar, 
+       units = c("in"),
+       width = 6.2,
+       height = 3.8,
+       dpi = 300, 
+       file="2020_36_GlobalCropYields.png", 
+       type="cairo-png") 
+
+```
+<<<<<<< HEAD
+```{r}
+arable_land <- tuesdata$arable_land_pin %>% 
+  clean_names() %>% 
+  rename(arable_land_needed = 4)
+arable_land
+
+
+foo <- arable_land %>%
+  #mutate(year = 10 * floor((year) / 10)) %>% 
+  filter(entity == "United States") %>% 
+  group_by(year) %>% 
+  summarise(mean_arable_land_needed = mean(arable_land_needed)) %>% 
+  filter(!is.na(mean_arable_land_needed)) %>% 
+  ggplot(aes(year, mean_arable_land_needed)) +
+  geom_line(color = "white") +
+  scale_x_continuous(breaks = seq(1961, 2014, 1))+
+  geom_point(color = "orange") +
+  labs(title = "Arable Land Needed to Produce a Fixed Quantity of Crops in the United States",
+       subtitle = "Arable land needed to produce a fixed quantity of crops is calculated as arable land divided by \nthe crop production index (PIN). The crop production index (PIN) here is the sum of crop\ncommodities (minus crops used for animal feed), weighted by commodity prices.\n This is measured as an index relative to 1961 (where 1961 = 1).",
+       x = "",
+       y = "",
+       caption ="Data: Our World in Data | Visualization: Eric Fletcher") +
+  theme(text = element_text(color = "white"),
+        axis.text = element_text(color = "white"),
+        axis.text.x = element_text(angle = 90, hjust = 0.5),
+        panel.grid = element_blank(),
+        plot.background = element_rect(fill = "black"),
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 8, hjust = 0.5),
+        plot.caption = element_text(size = 7, hjust = 0.5))
+foo
+
+ggsave(foo, 
+       units = c("in"),
+       width = 8,
+       height = 3.8,
+       dpi = 300, 
+       file="2020_36_GlobalCrops_ArableLand.png", 
+       type="cairo-png") 
+```
+```{r}
+?str_remove
+?rename_all
+?pivot_longer
+?fct_reorder
+?geom_line
+```
+=======
+>>>>>>> 4daa56a7156094af81f1c9f83e1b9b76b3f1022c
+
+
+
+
+
+
+
+
+
+
+
+
+
