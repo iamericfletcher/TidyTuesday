@@ -69,7 +69,7 @@ beer_awards_tidy %>%
   labs(title = "Great American Beer Festival",
        subtitle = "Total Medals per State, 1987 - 2020",
        x = "State",
-       y = "Total Medals"
+       y = "Total Medals (n > 9)"
   )
 ```
 
@@ -89,10 +89,44 @@ beer_awards_tidy %>%
   labs(title = "Great American Beer Festival",
        subtitle = "Total Medals per Category, 1987 - 2020",
        x = "",
-       y = "Total Medals"
+       y = "Total Medals (n > 13)"
   )
+```
+
+```{r Total Number of Beers Over Time}
+# Total number of awards over time. 
+beer_awards_tidy %>%
+  group_by(year) %>% 
+  summarise(total = n()) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = year, y = total)) +
+  geom_line() +
+  expand_limits(y = 0) +
+  labs(title = "Great American Beer Festival",
+       subtitle = "Total Number of Awarded Beers Over Time, 1987 - 2020",
+       x = "Year",
+       y = "Total Medals",
+       color = "Medal")
+
+
+
+# Total number of awarded beers over time by medal type.
+beer_awards_tidy %>%
+  group_by(year, medal) %>% 
+  summarise(total = n()) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = year, y = total)) +
+  geom_line(aes(color = medal), size = 1.5) +
+  expand_limits(y = 0) +
+  scale_color_manual(values = c("#FFD700", "#C0C0C0", "#cd7f32")) +
+  labs(title = "Great American Beer Festival",
+       subtitle = "Total Number of Awarded Beers Over Time by Medal Type, 1987 - 2020",
+       x = "Year",
+       y = "Total Medals",
+       color = "Medal")
 
 ```
+
 
 
 
