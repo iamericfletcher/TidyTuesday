@@ -1,0 +1,98 @@
+---
+title: "2020_43_Great_American_Beer_Festival_Data"
+author: "Eric Fletcher"
+date: "10/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Libraries}
+library(tidytuesdayR)
+library(tidyverse)
+library(forcats)
+library(tidytext)
+theme_set(theme_light())
+```
+
+The data for today's post comes from the [Great American Beer Festival](https://www.greatamericanbeerfestival.com/the-competition/winners/).
+
+According to their website:
+
+> The Great American Beer Festival invites industry professionals from around the world to sit together in small groups  and, without knowing the brand name, taste beers in each specified style category. The ultimate goal of the Great American Beer Festival Judge Panel is to identify the three beers that best represent each beer-style category as described and adopted by the Great American Beer Festival.
+
+```{r Data Import}
+
+tuesdata <- tidytuesdayR::tt_load(2020, week = 43)
+
+# View data dictionary
+tuesdata
+
+beer_awards <- tuesdata$beer_awards
+
+view(beer_awards)
+```
+
+```{r Data Cleaning}
+beer_awards_tidy <- beer_awards %>%
+  # Reorder the factor levels
+  mutate(medal = fct_relevel(medal, c("Gold", "Silver", "Bronze")))
+  
+
+```
+The data set includes 1,859 breweries over 34 years from 1987 to 2020.
+```{r}
+beer_awards_tidy %>% 
+  count(year)
+
+beer_awards_tidy %>% 
+  count(brewery)
+
+
+```
+
+```{r Total Medals per State}
+# Total medals per state for states with >9 total medals. 
+beer_awards_tidy %>% 
+  count(medal, state, name = "total_medals") %>%
+  mutate(state =  reorder_within(state, total_medals, medal)) %>%
+  filter(total_medals > 9) %>% 
+  ggplot(aes(x = state, y = total_medals)) +
+  geom_text(aes(label = total_medals, hjust = 0), size = 3) +
+  geom_col() + 
+  facet_wrap(~ medal, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() +
+  expand_limits(y = 400) + 
+  labs(title = "Great American Beer Festival",
+       subtitle = "Total Medals per State, 1987 - 2020",
+       x = "State",
+       y = "Total Medals"
+  )
+```
+
+```{r Total Medals per Category}
+#Total medals per category for categories with >13 total medals. 
+beer_awards_tidy %>% 
+  count(category, medal, sort = TRUE) %>% 
+  mutate(category = reorder_within(category, n, medal)) %>% 
+  filter(n > 13) %>% 
+  ggplot(aes(x = category, y = n)) +
+  geom_text(aes(label = n, hjust = 0), size = 3) +
+  geom_col() +
+  facet_wrap(~ medal, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() +
+  expand_limits(y = 30) + 
+  labs(title = "Great American Beer Festival",
+       subtitle = "Total Medals per Category, 1987 - 2020",
+       x = "",
+       y = "Total Medals"
+  )
+
+```
+
+
+
