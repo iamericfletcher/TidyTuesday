@@ -128,7 +128,7 @@ brewery_top_20 <- beer_awards_tidy %>%
   group_by(brewery, state) %>% 
   summarise(n = n()) %>% 
   ungroup() %>% 
-  slice_max(order_by = n, n = 25) %>%
+  slice_max(order_by = n, n = 10) %>%
   mutate(brewery = glue("{ brewery }, { state }")) %>%
   view() %>% 
   pull(brewery)
@@ -140,17 +140,24 @@ beer_awards_tidy %>%
   group_by(brewery, medal) %>%
   summarise(total_medals = n()) %>%
   ungroup() %>%
-  ggplot(aes(x = reorder(brewery, total_medals), y = total_medals)) +
-  geom_col(aes(fill = medal)) + 
+  ggplot(aes(x = reorder(brewery, total_medals), y = total_medals, fill = medal)) +
+  geom_bar(stat = "identity", width = 0.8) + 
+  geom_text(aes(x = reorder(brewery, total_medals), y = total_medals, label = total_medals), position = position_stack(vjust = 0.5)) +
   coord_flip() +
   scale_fill_manual(values = c("#FFD700", "#C0C0C0", "#cd7f32")) +
   labs(
     title = "The Great American Beer Festival",
     subtitle = "Top Breweries by Total Medals, 1987 - 2020",
     x = "Brewery",
-    y = "Total Medals",
+    y = "Medals",
     caption = "Data: The Great American Beer Festival",
     fill = ""
+  ) +
+  theme(
+    plot.title = element_text(size = 15),
+    axis.text = element_text(size = 11),
+    legend.text = element_text(size = 10),
+    axis.title = element_text(size = 13)
   )
 ```
 
