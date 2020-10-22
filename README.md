@@ -2,6 +2,9 @@
 
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming.
 
+### [Week 2020/43](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-10-20/readme.md) Top Breweries by Total Medals | Data: [The Great American Beer Festival](https://www.greatamericanbeerfestival.com/the-competition/winners/) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_43_Great_American_Beer_Festival.Rmd)
+![Top Breweries by Total Medals](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/Plots/2020_43/top_breweries_by_total_medals_final.png)
+
 ### [Week 2020/39](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-22/readme.md) Himalayan Climbing Expeditions: 1909 - 2019 [Shiny Interactive DataTable](https://iamericfletcher.shinyapps.io/Himalayan_Peaks_Shiny/) | Data: [the Himalayan Database](https://www.himalayandatabase.com/) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_39_Himalayan_Climbing_Expeditions_app.R)
 ![GIF](https://user-images.githubusercontent.com/64165327/95458196-d79e5680-093f-11eb-80ae-5a5fb3bdbab0.gif)
 
