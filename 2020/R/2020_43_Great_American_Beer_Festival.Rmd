@@ -128,7 +128,7 @@ brewery_top_20 <- beer_awards_tidy %>%
   group_by(brewery, state) %>% 
   summarise(n = n()) %>% 
   ungroup() %>% 
-  slice_max(order_by = n, n = 10) %>%
+  slice_max(order_by = n, n = 20) %>%
   mutate(brewery = glue("{ brewery }, { state }")) %>%
   view() %>% 
   pull(brewery)
