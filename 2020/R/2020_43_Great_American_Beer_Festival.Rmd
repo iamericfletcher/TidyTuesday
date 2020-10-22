@@ -14,15 +14,9 @@ library(tidytuesdayR)
 library(tidyverse)
 library(forcats)
 library(tidytext)
-theme_set(theme_light())
+library(glue)
+theme_set(theme())
 ```
-
-The data for today's post comes from the [Great American Beer Festival](https://www.greatamericanbeerfestival.com/the-competition/winners/).
-
-According to their website:
-
-> The Great American Beer Festival invites industry professionals from around the world to sit together in small groups  and, without knowing the brand name, taste beers in each specified style category. The ultimate goal of the Great American Beer Festival Judge Panel is to identify the three beers that best represent each beer-style category as described and adopted by the Great American Beer Festival.
-
 ```{r Data Import}
 
 tuesdata <- tidytuesdayR::tt_load(2020, week = 43)
@@ -35,7 +29,7 @@ beer_awards <- tuesdata$beer_awards
 view(beer_awards)
 ```
 
-```{r Data Cleaning}
+```{r Main Data Changes}
 beer_awards_tidy <- beer_awards %>%
   # Reorder the factor levels
   mutate(medal = fct_relevel(medal, c("Gold", "Silver", "Bronze")))
@@ -43,7 +37,7 @@ beer_awards_tidy <- beer_awards %>%
 
 ```
 The data set includes 1,859 breweries over 34 years from 1987 to 2020.
-```{r}
+```{r Counts}
 beer_awards_tidy %>% 
   count(year)
 
@@ -54,11 +48,12 @@ beer_awards_tidy %>%
 ```
 
 ```{r Total Medals per State}
-# Total medals per state for states with >9 total medals. 
+# Total medals per state for states with >9 total medals.
+
 beer_awards_tidy %>% 
   count(medal, state, name = "total_medals") %>%
   mutate(state =  reorder_within(state, total_medals, medal)) %>%
-  filter(total_medals > 9) %>% 
+  filter(total_medals >= 10) %>% 
   ggplot(aes(x = state, y = total_medals)) +
   geom_text(aes(label = total_medals, hjust = 0), size = 3) +
   geom_col() + 
@@ -69,7 +64,8 @@ beer_awards_tidy %>%
   labs(title = "Great American Beer Festival",
        subtitle = "Total Medals per State, 1987 - 2020",
        x = "State",
-       y = "Total Medals (n > 9)"
+       y = "Total Medals",
+       caption = "Data: The Great American Beer Festival"
   )
 ```
 
@@ -124,8 +120,40 @@ beer_awards_tidy %>%
        x = "Year",
        y = "Total Medals",
        color = "Medal")
-
 ```
+```{r Top Breweries - TidyTuesday}
+
+# Top 20 breweries by total medals.
+brewery_top_20 <- beer_awards_tidy %>% 
+  group_by(brewery, state) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  slice_max(order_by = n, n = 25) %>%
+  mutate(brewery = glue("{ brewery }, { state }")) %>%
+  view() %>% 
+  pull(brewery)
+  
+# Plot 
+beer_awards_tidy %>% 
+  mutate(brewery = glue("{ brewery }, { state }")) %>%
+  filter(brewery %in% brewery_top_20) %>%
+  group_by(brewery, medal) %>%
+  summarise(total_medals = n()) %>%
+  ungroup() %>%
+  ggplot(aes(x = reorder(brewery, total_medals), y = total_medals)) +
+  geom_col(aes(fill = medal)) + 
+  coord_flip() +
+  scale_fill_manual(values = c("#FFD700", "#C0C0C0", "#cd7f32")) +
+  labs(
+    title = "The Great American Beer Festival",
+    subtitle = "Top Breweries by Total Medals, 1987 - 2020",
+    x = "Brewery",
+    y = "Total Medals",
+    caption = "Data: The Great American Beer Festival",
+    fill = ""
+  )
+```
+
 
 
 
