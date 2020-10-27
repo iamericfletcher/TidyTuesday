@@ -31,18 +31,28 @@ view(beer_awards)
 
 ```{r Main Data Changes}
 beer_awards_tidy <- beer_awards %>%
-  # Reorder the factor levels
-  mutate(medal = fct_relevel(medal, c("Gold", "Silver", "Bronze")))
+  # Reorder the factor levels.
+  # One observation had 'wa' instead of 'WA' for state abbreviation. 
+  mutate(medal = fct_relevel(medal, c("Gold", "Silver", "Bronze")),
+         state = case_when(
+               state == "wa" ~ "WA",
+              TRUE ~ state
+         ))
   
-
+?case_when
 ```
 The data set includes 1,859 breweries over 34 years from 1987 to 2020.
 ```{r Counts}
-beer_awards_tidy %>% 
-  count(year)
+
 
 beer_awards_tidy %>% 
-  count(brewery)
+  count(medal) %>% 
+  view()
+
+beer_awards_tidy %>% 
+  filter(state == "PR")
+
+length(unique(beer_awards_tidy[["category"]]))
 
 
 ```
