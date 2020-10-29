@@ -6,12 +6,51 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
+
+The data for today's post comes from the [[Government of Canada](%5Bhttps://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070)]([<https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070>](https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070){.uri}) accessed via the [TidyTuesday](<https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-10-27/readme.md>) project.
+
+According to their website:
+
+> The Canadian Wind Turbine Database contains the geographic location and key technology details for wind turbines installed in Canada.
+>
+> This dataset was jointly compiled by researchers at CanmetENERGY-Ottawa and by the Centre for Applied Business Research in Energy and the Environment at the University of Alberta, under contract from Natural Resources Canada.
+
+## Data Dictionary:
+
+| Variable                    | Description                      |
+|:----------------------------|:---------------------------------|
+| objectid                    | Unique ID                        |
+| province_territory          | Province/territory               |
+| project_name                | Project name                     |
+| total_project_capacity_mw   | Electrical capacity in megawatts |
+| turbine_identifier          | Turbine ID                       |
+| turbine_number_in_project   | Turbine number in project        |
+| turbine_rated_capacity_k\_w | Turbine capacity in kilowatts    |
+| rotor_diameter_m            | Rotor diameter in meters         |
+| hub_height_m                | Hub height in meters             |
+| manufacturer                | Manufacturer                     |
+| model                       | Model ID                         |
+| commissioning_date          | Commission date                  |
+| latitude                    | Latitude                         |
+| longitude                   | Longitude                        |
+| notes                       | Notes about the data             |
+
+## Data Exploration:
+
+### Data and library Import
 
 ```{r}
 library(tidytuesdayR)
 library(tidyverse)
+library(rnaturalearth)
+library(rnaturalearthhires)
+library(rgeos)
+# Use this to install rnaturalearthhires which is An R package to store data for the rnaturalearth package.
+devtools::install_github("ropensci/rnaturalearthhires")
+library(sf)
+library(scales)
 ```
 
 ```{r}
@@ -21,6 +60,105 @@ wind_turbine <- readr::read_csv('https://raw.githubusercontent.com/rfordatascien
 ```
 
 ```{r}
+wind_turbine %>% 
+  view()
+
+wind_turbine %>% 
+  count(project_name, sort = TRUE)
+```
+
+```{r, echo = TRUE, layout="l-body-outset", dpi = 500, fig.dim=c(16.18, 10)}
+# Return Canada polygons using `ne_states`
+canada <- ne_states(country = "Canada", returnclass = "sf")
+ 
 
 ```
 
+```{r}
+# A single location for every project. 
+wind_projects_processed <- wind_turbine %>% 
+  # If turbine capacity is less than 0, replace with NA, else return the turbine capacity.
+  mutate(turbine_rated_capacity_k_w = ifelse(turbine_rated_capacity_k_w < 0, NA,
+                                             turbine_rated_capacity_k_w)) %>% 
+  group_by(project_name, province_territory) %>% 
+  summarize(year = min(commissioning_date, na.rm = TRUE),
+            turbines = n(),
+            total_capacity = sum(turbine_rated_capacity_k_w),
+            lon = mean(longitude),
+            lat = mean(latitude),
+            # Determine how spread out each project is.
+            # Lower the sd the less spread out the project it.
+            # Higher the sd the more spread out the project is.
+            long_sd = sd(longitude),
+            lat_sd = sd(latitude)) %>% 
+  mutate(year = as.numeric(year))
+
+# Convert foreign object to an sf object to be used in geom_sf
+wind_projects_sf <- st_as_sf(wind_projects_processed, coords = c("lon", "lat"))
+
+# Retrieve the coordinate reference system from the sf object above. 
+st_crs(wind_projects_sf) <- 4326
+
+# Plot 
+ggplot() +
+  geom_sf(data = canada, mapping = aes(geometry = geometry)) +
+  geom_sf(
+    data = wind_projects_sf,
+    mapping = aes(size = turbines, color = total_capacity)
+  ) +
+  # Applying a modification to geom_sf to use a different projection of the map.
+  # Canada Albers Equal Area Conic (https://epsg.io/102001)
+  coord_sf(crs = "+proj=aea +lat_1=50 +lat_2=70 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs") +
+        theme_void()
+
+?coord_sf
+
+```
+
+```{r}
+options(scipen = 999)
+
+# Determine if projects cover multiple years. 
+wind_turbine %>% 
+  distinct(project_name, commissioning_date) %>% 
+  count(project_name, sort = TRUE)
+
+
+# Distribution of project commissioning date.
+wind_projects_processed %>% 
+  ggplot(aes(year)) +
+  geom_histogram()
+
+# How has turbine capacity changed over time? 
+wind_projects_processed %>% 
+  ggplot(aes(year, total_capacity)) +
+  geom_point() +
+  scale_y_continuous(label = comma)
+
+# How has individual turbine capacity changed over time?
+wind_projects_processed %>% 
+  ggplot(aes(year, total_capacity / turbines)) +
+  geom_point() +
+  scale_y_continuous(label = comma)
+
+# What is the turbine capacity for each model?
+# Some models have multiple capacities. Is there a reason for this?
+# Best bet is to take the median since there are cases where most are 1 value but sometimes another.
+wind_projects %>% 
+  group_by(model) %>% 
+  summarize(turbine_rated_capacity_k_w = n_distinct(turbine_rated_capacity_k_w)) %>% 
+  arrange(desc(turbine_rated_capacity_k_w))
+
+wind_projects %>% 
+  group_by(model, hub_height_m) %>%
+  summarize(total_project_capacity_mw = median(total_project_capacity_mw),
+            turbine_rated_capacity_k_w = median(turbine_rated_capacity_k_w),
+            turbines = n(),
+            projects = n_distinct(project_name)) %>% 
+  arrange(desc(projects)) %>% 
+  # Does bigger hub height lead to larger capacity? (Yes!)
+  ggplot(aes(turbine_rated_capacity_k_w, hub_height_m)) +
+  geom_point()
+
+  
+```
