@@ -67,7 +67,7 @@ wind_turbine %>%
   count(project_name, sort = TRUE)
 ```
 
-```{r, echo = TRUE, layout="l-body-outset", dpi = 500, fig.dim=c(16.18, 10)}
+```{r}
 # Return Canada polygons using `ne_states`
 canada <- ne_states(country = "Canada", returnclass = "sf")
  
