@@ -70,12 +70,15 @@ wind_turbine %>%
 ```{r}
 # Return Canada polygons using `ne_states`
 canada <- ne_states(country = "Canada", returnclass = "sf")
+
+wind_turbine %>% 
+  summarize(max = max(commissioning_date),
+            min = min(commissioning_date))
  
 
 ```
 
 ```{r}
-# A single location for every project. 
 wind_projects_processed <- wind_turbine %>% 
   # If turbine capacity is less than 0, replace with NA, else return the turbine capacity.
   mutate(turbine_rated_capacity_k_w = ifelse(turbine_rated_capacity_k_w < 0, NA,
@@ -84,6 +87,7 @@ wind_projects_processed <- wind_turbine %>%
   summarize(year = min(commissioning_date, na.rm = TRUE),
             turbines = n(),
             total_capacity = sum(turbine_rated_capacity_k_w),
+            # A single location for every project. 
             lon = mean(longitude),
             lat = mean(latitude),
             # Determine how spread out each project is.
@@ -109,9 +113,13 @@ ggplot() +
   # Applying a modification to geom_sf to use a different projection of the map.
   # Canada Albers Equal Area Conic (https://epsg.io/102001)
   coord_sf(crs = "+proj=aea +lat_1=50 +lat_2=70 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs") +
-        theme_void()
-
-?coord_sf
+  labs(title = "Canadian Wind Turbines",
+       subtitle = "Total capacity and number of turbines per project, 1993 - 2019",
+       caption = "Data: Government of Canada | Plot: Eric Fletcher",
+       size = "# of Turbines",
+       color = "Total Capacity kW") +
+  theme_void()
+  
 
 ```
 
