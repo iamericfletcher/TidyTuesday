@@ -2,6 +2,9 @@
 
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming.
 
+### [Week 2020/44](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-10-27/readme.md) Canadian Wind Turbines - Total capacity and number of turbines per project, 1993 - 2019 | Data: [Government of Canada](https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_44_Canadian_Wind_Turbines.Rmd)
+![Canadian Wind Turbines](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/Plots/2020_44/total_capacity_number_of_turbines.png?raw=true)
+
 ### [Week 2020/43](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-10-20/readme.md) Top Breweries by Total Medals | Data: [The Great American Beer Festival](https://www.greatamericanbeerfestival.com/the-competition/winners/) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_43_Great_American_Beer_Festival.Rmd)
 ![Top Breweries by Total Medals](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/Plots/2020_43/top_breweries_by_total_medals_final.png)
 
