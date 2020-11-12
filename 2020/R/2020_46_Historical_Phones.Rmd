@@ -1,0 +1,156 @@
+---
+title: "2020_46_Historical_Phones"
+author: "Eric Fletcher"
+date: "11/10/2020"
+output: html_document
+---
+
+The data is provided by [Our World in Date](https://ourworldindata.org/technology-adoption#technology-leapfrogging), and was accessed via the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) community of practice.
+
+```{r Package Import}
+library(tidytuesdayR)
+library(tidyverse)
+```
+
+```{r Data Import}
+# Using the tidytuesdayR package which loads the datasets as well as the readme. 
+tuesdata <- tidytuesdayR::tt_load('2020-11-10')
+
+# Readme.
+tuesdata
+
+# Rename the datasets. 
+mobile_raw <- tuesdata$mobile
+landline_raw <- tuesdata$landline
+
+# View the datasets.
+mobile_raw
+landline_raw
+```
+
+```{r Data Cleaning}
+# Combine the two data sets. 
+mobile_raw
+landline_raw
+
+mobile_clean <- mobile_raw %>% 
+  rename(subs = mobile_subs) %>% 
+  mutate(
+    type = "Mobile"
+  )
+
+landline_clean <- landline_raw %>% 
+  rename(subs = landline_subs) %>% 
+  mutate(
+    type = "Landline"
+  )
+
+phone_combined <-bind_rows(mobile_clean, landline_clean)
+
+```
+
+### Observations:
+
+-   There are 5 continents:
+
+    -   Africa
+    -   Asia
+    -   Europe
+    -   Americas
+    -   Oceania
+
+-   There are 238 countries.
+
+-   The data spans from 1990 to 2017.
+
+```{r Data Overview}
+
+### Data Summary:
+
+# NA summary.
+colMeans(is.na(mobile_raw))
+colMeans(!is.na(landline_raw))
+
+# Data summary.
+skimr::skim(mobile_raw)
+skimr::skim(landline_raw)
+
+### Basic Counts:
+
+mobile_raw %>% 
+  count(continent, sort = TRUE)
+
+landline_raw %>% 
+  count(continent, sort = TRUE)
+
+# Count the number of years.
+
+# Mobile - 1990 to 2017.
+mobile_raw %>% 
+  count(year)
+
+# Landline - 1990 to 2019.
+landline_raw %>% 
+  count(year)
+```
+
+### Exploratory Data Analysis
+
+```{r EDA 1}
+# Let's look at the United States.
+phone_combined %>% 
+  filter(entity == "United States") %>% 
+  ggplot(aes(x = year, y = subs)) +
+  geom_line(aes(color = type)) +
+  labs(
+    title = "Landline versus Mobile Subscriptions in the United States",
+    subtitle = "1990 to 2019",
+    caption = "Data Source: Our Word in Data | Plot: Eric Fletcher",
+    color = "Type",
+    x = "Year",
+    y = "Subscriptions (per 100 people)"
+  ) +
+  theme_set(theme_light())
+```
+
+```{r - EDA 2}
+# Let's take a look at every entity (Country) included in the data set. 
+phone_combined %>% 
+  ggplot(aes(x = year, y = subs, color = type, group = interaction(type, entity))) +
+  geom_line() + 
+  labs(
+    title = "Landline versus Mobile Subscriptions",
+    subtitle = "Every Country, 1990 to 2019",
+    caption = "Data Source: Our Word in Data | Plot: Eric Fletcher",
+    color = "Type",
+    x = "Year",
+    y = "Subscriptions (per 100 people)"
+  )
+```
+
+```{r EDA 3}
+# Let's take the previous plot and show only the most populated countries.
+
+top_population <- phone_combined %>% 
+  group_by(entity) %>% 
+  summarise(
+    average_pop = mean(total_pop, na.rm = TRUE)
+  ) %>% 
+  arrange(desc(average_pop))
+
+phone_combined %>% 
+  semi_join(top_population %>% top_n(20, wt = average_pop)) %>% 
+  ggplot(aes(x = year, y = subs, color = type, group = interaction(type, entity))) +
+  geom_line() +
+  geom_hline(yintercept = 50, lty = 2) +
+  labs(
+    title = "Landline versus Mobile Subscriptions",
+    subtitle = "Top Countries by Average Population, 1990 to 2019",
+    caption = "Data Source: Our Word in Data | Plot: Eric Fletcher",
+    color = "Type",
+    x = "Year",
+    y = "Subscriptions (per 100 people)"
+  ) +
+  facet_wrap(~continent)
+
+```

@@ -42,6 +42,7 @@ According to their website:
 ### Data and library Import
 
 ```{r}
+options(scipen = 999)
 library(tidytuesdayR)
 library(tidyverse)
 library(rnaturalearth)
@@ -124,8 +125,6 @@ ggplot() +
 ```
 
 ```{r}
-options(scipen = 999)
-
 # Determine if projects cover multiple years. 
 wind_turbine %>% 
   distinct(project_name, commissioning_date) %>% 
