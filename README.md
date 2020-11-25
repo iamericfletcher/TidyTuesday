@@ -2,6 +2,9 @@
 
 My contributions to the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project, a weekly data project created by [Thomas Mock](https://github.com/jthomasmock) aimed at the R ecosystem with an emphasis on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr},` `{dplyr}`, and other tools in the [tidyverse](https://www.tidyverse.org/) ecosystem. It is a terrific resource for individuals, like myself, who are new to programming.
 
+### [Week 2020/48](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-24/readme.md) Which Washington State region has the highest average hiking trail rating? | Data: [Washington Trails Association](https://www.wta.org/go-outside/hikes) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_48_Washington_Trails.Rmd)
+![Rplot](https://user-images.githubusercontent.com/64165327/100266775-5ff0af00-2f20-11eb-8e89-d6f431c3b2ff.png)
+
 ### [Week 2020/46](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-10/readme.md) Landline versus Mobile Subscriptions - Top Countries by Average Population, 1990 to 2019 | Data: [Our World in Date](https://ourworldindata.org/technology-adoption#technology-leapfrogging) | [Code](https://github.com/iamericfletcher/TidyTuesday/blob/master/2020/R/2020_46_Historical_Phones.Rmd)
 ![landline-vs-mobile-top-countries-avg-pop](https://user-images.githubusercontent.com/64165327/98974338-cb7b5b00-24e2-11eb-9ab5-6d264ed381a0.png)
 
