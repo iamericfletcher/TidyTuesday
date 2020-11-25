@@ -1,0 +1,92 @@
+---
+title: "2020-11-24 Washington Trails"
+author: "Eric Fletcher"
+date: "11/24/2020"
+output: html_document
+---
+
+```{r}
+library(data.table)
+library(tidyverse)
+library(tidytuesdarR)
+library(scales)
+library(systemfonts)
+library(glue)
+```
+
+```{r}
+
+tuesdata <- tidytuesdayR::tt_load(2020, week = 48)
+
+tuesdata
+
+hike_raw <- tuesdata$hike_data
+
+hike <- hike_raw %>% 
+  select(-7)
+
+trail_features <- hike_raw[, c(1, 2, 7)]
+
+
+```
+
+
+```{r}
+
+hike_tidy <- hike %>% 
+  distinct(name, location, .keep_all = TRUE) %>% 
+  separate(length, into = c("length2", "trip"), " ",extra = "merge") %>% 
+  mutate(
+    gain = as.numeric(gain),
+    highpoint = as.numeric(highpoint),
+    rating = as.numeric(rating),
+    length2 = as.numeric(length2),
+    length2 = ifelse(str_detect(trip, "one-way"), length2 * 2, length2),
+    region = str_extract(location, "^\\w+(?: \\w+)*")
+  ) %>% 
+  rename("miles" = length2) %>% 
+  select(name, region, miles, gain, highpoint, rating)
+
+
+hike_tidy %>%
+  group_by(region) %>%
+  summarise(
+    n = n(),
+    avg_rating = round(mean(rating), 2)
+  ) %>% 
+  mutate(region = fct_reorder(region, -avg_rating)) %>% 
+  ggplot(aes(region, avg_rating)) +
+  geom_col(fill = "#00843D", color = "black") +
+  geom_text(aes(label = glue( "Total Trails: { n }\nAverage Rating:\n{ avg_rating } out of 5"), family = "Rockwell"), nudge_y = 0.45, size = 3) +
+  #scale_y_discrete(expand = c(0,0)) +
+  labs(
+    title = "Which Washington State region has the highest average hiking trail rating?",
+    subtitle = "Data is from the Washington Trails Association's hiking guide, which is the most comprehensive database of hikes in Washington,\nand comprises content written by local hiking experts and user-submitted information."
+  ) +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      face = "bold",
+      family = "Rockwell",
+      size = 20, 
+      color = "#FFCD00"),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      face = "bold",
+      family = "Rockwell",
+      size = 10, 
+      color = "#05C3DE"),
+    axis.text.x = element_text(family = "Rockwell"),
+    #axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    panel.grid = element_blank()
+  ) +
+  expand_limits(y = 5)
+```
+
+
+
